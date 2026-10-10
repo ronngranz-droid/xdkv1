@@ -285,7 +285,7 @@ export const initialClassHubState: ClassHubState = {
     name: 'X DKV 1',
     fullName: 'X Desain Komunikasi Visual 1',
     schoolName: 'SMK',
-    academicYear: '2024/2025',
+    academicYear: '2025/2026',
     semester: 'Semester Ganjil',
     slogan: 'Kompak, Kreatif, dan Berprestasi',
     roomNumber: 'Ruang X DKV 1',

@@ -79,7 +79,7 @@ export default function StrukturPage() {
               STRUKTUR KELAS
             </h1>
             <p className="text-[10px] sm:text-xs text-[#A3D1B5] font-semibold tracking-wider uppercase mt-1">
-              X DKV 1 • TAHUN AJARAN 2024/2025
+              X DKV 1 • TAHUN AJARAN {state.classInfo.academicYear}
             </p>
           </div>
         </div>

@@ -58,7 +58,7 @@ interface ClassDataContextType {
   importDataFromJson: (jsonString: string) => boolean;
 }
 
-const STORAGE_KEY = 'classhub_data_v7';
+const STORAGE_KEY = 'classhub_data_v8';
 const ADMIN_AUTH_KEY = 'classhub_admin_session';
 const ADMIN_DEFAULT_PASSWORD = 'admin';
 
