@@ -165,9 +165,9 @@ export default function Navbar() {
               title="Wali Kelas: Ibu Marleni | Ketua: Ahmad Zalqi"
               className="flex items-center gap-1.5 group p-0.5 rounded-full hover:bg-white/20 transition-all"
             >
-              <div className="w-8 h-8 rounded-full bg-[#FFF2D6] border-2 border-white flex items-center justify-center text-sm shadow-xs overflow-hidden group-hover:scale-105 transition-transform">
+              <div className="w-8 h-8 rounded-full bg-[#FFF2D6] border-2 border-white flex items-center justify-center text-sm shadow-xs overflow-hidden group-hover:scale-110 transition-transform">
                 {/* Cute Boy / Mascot Emoji */}
-                <span className="select-none">👦🏻</span>
+                <span className="select-none group-hover:animate-wiggle">👦🏻</span>
               </div>
             </Link>
 

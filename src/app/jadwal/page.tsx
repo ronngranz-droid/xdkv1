@@ -143,6 +143,7 @@ export default function JadwalPage() {
   const [currentToday, setCurrentToday] = useState<DayOfWeek>('Senin');
   const [viewMode, setViewMode] = useState<'poster' | 'harian'>('poster');
   const [activeDay, setActiveDay] = useState<DayOfWeek>('Senin');
+  const [selectedPosterDay, setSelectedPosterDay] = useState<DayOfWeek | 'Semua'>('Senin');
   const [showPosterModal, setShowPosterModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -150,9 +151,20 @@ export default function JadwalPage() {
     const today = getCurrentIndonesianDay();
     setCurrentToday(today);
     setActiveDay(today);
+    setSelectedPosterDay(today);
   }, []);
 
   const days: DayOfWeek[] = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'];
+
+  const getSlotForDay = (slot: ScheduleSlot, day: DayOfWeek) => {
+    switch (day) {
+      case 'Senin': return slot.senin;
+      case 'Selasa': return slot.selasa;
+      case 'Rabu': return slot.rabu;
+      case 'Kamis': return slot.kamis;
+      case 'Jumat': return slot.jumat;
+    }
+  };
 
   const handlePrint = () => {
     window.print();
@@ -233,10 +245,122 @@ export default function JadwalPage() {
             </div>
           </div>
 
-          {/* Outer Grid Wrapper */}
-          <div className="relative z-10 space-y-5 overflow-x-auto">
+          {/* Mobile Day Selector Pill Strip: Resolves Horizontal Cutoff on Phones */}
+          <div className="sm:hidden space-y-2 relative z-10">
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[11px] font-bold text-[#2670A8] flex items-center gap-1">
+                <CalendarDays className="w-3.5 h-3.5" />
+                <span>Pilih Hari Pelajaran:</span>
+              </span>
+              {selectedPosterDay !== 'Semua' && (
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/80 text-[#2670A8] border border-[#B9DCFF]">
+                  Mode Pas Layar HP ✨
+                </span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+              {(['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Semua'] as const).map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setSelectedPosterDay(d)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-black transition-all shrink-0 ${
+                    selectedPosterDay === d
+                      ? 'bg-[#2670A8] text-white shadow-sm scale-105'
+                      : 'bg-white/90 text-[#263B50] hover:bg-white border border-[#B9DCFF]'
+                  }`}
+                >
+                  {d === 'Semua' ? 'Semua (4 Kolom)' : d}
+                  {d === currentToday && (
+                    <span className="ml-1 text-[9px] text-emerald-400 font-extrabold">• Hari Ini</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile 2-Column Capsule Layout (WAKTU + SELECTED DAY) - ZERO CUTOFF */}
+          {selectedPosterDay !== 'Semua' && (
+            <div className="sm:hidden grid grid-cols-12 gap-2 relative z-10">
+              {/* Capsule WAKTU (5 Cols) */}
+              <div className="col-span-5 bg-white/95 backdrop-blur-xs rounded-2xl border-2 border-dashed border-[#5A9FE8] p-2 shadow-sm flex flex-col">
+                <div className="text-center pb-1.5 mb-1.5 border-b border-[#E4EEF8]">
+                  <h3 className="font-extrabold text-xs text-[#263B50] uppercase tracking-wide">
+                    Waktu
+                  </h3>
+                </div>
+                <div className="space-y-1 flex-1">
+                  {schedulePosterData.map((slot, idx) => (
+                    <div
+                      key={idx}
+                      className={`h-7 flex items-center justify-center text-center text-[10px] font-bold rounded-lg px-0.5 ${
+                        slot.isBreak
+                          ? 'text-rose-500 bg-rose-50 border border-rose-100 text-[9px]'
+                          : 'text-[#263B50]'
+                      }`}
+                    >
+                      {slot.time}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Capsule SELECTED DAY (7 Cols) */}
+              <div
+                className={`col-span-7 bg-white/95 backdrop-blur-xs rounded-2xl border-2 border-dashed border-[#5A9FE8] p-2 shadow-sm flex flex-col ${
+                  currentToday === selectedPosterDay ? 'ring-2 ring-[#5A9FE8]' : ''
+                }`}
+              >
+                <div className="text-center pb-1.5 mb-1.5 border-b border-[#E4EEF8] flex items-center justify-center gap-1.5">
+                  <h3 className="font-extrabold text-xs text-[#263B50] uppercase tracking-wide">
+                    {selectedPosterDay}
+                  </h3>
+                  {currentToday === selectedPosterDay && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" title="Hari Ini" />
+                  )}
+                </div>
+                <div className="space-y-1 flex-1">
+                  {schedulePosterData.map((slot, idx) => {
+                    const item = getSlotForDay(slot, selectedPosterDay);
+                    return (
+                      <div
+                        key={idx}
+                        className={`h-7 flex items-center justify-center text-center text-[10px] font-bold rounded-lg px-1 truncate ${
+                          slot.isBreak
+                            ? 'text-[#71849A]/40'
+                            : item.isSpecial
+                            ? 'text-rose-500 bg-rose-50 border border-rose-100'
+                            : 'text-[#263B50]'
+                        }`}
+                      >
+                        <span className="truncate">{item.subject}</span>
+                        {item.teacher && (
+                          <span className="text-[#5A9FE8] ml-1 font-semibold text-[9px] shrink-0">
+                            ({item.teacher})
+                          </span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Full 4-Column Poster Grid (Shown on Desktop & When Mobile selects "Semua") */}
+          <div
+            className={`relative z-10 space-y-5 overflow-x-auto ${
+              selectedPosterDay !== 'Semua' ? 'hidden sm:block' : 'block'
+            }`}
+          >
+            {/* Scroll Hint on Mobile */}
+            <div className="sm:hidden px-3 py-1.5 bg-[#DEF0FC] rounded-full text-[11px] font-bold text-[#2670A8] flex items-center justify-center gap-1.5 border border-[#BEE0F9] mb-1">
+              <span>👉 Geser tabel ke samping untuk melihat hari lainnya 👉</span>
+            </div>
+
             {/* ROW 1: WAKTU, SENIN, SELASA, RABU (4 CAPSULES) */}
-            <div className="grid grid-cols-4 gap-3 sm:gap-4 min-w-[720px]">
+            <div className="grid grid-cols-4 gap-3 sm:gap-4 min-w-[720px] p-0.5">
               {/* Capsule 1: WAKTU */}
               <div className="bg-white/95 backdrop-blur-xs rounded-3xl border-2 border-dashed border-[#5A9FE8] p-3 sm:p-4 shadow-sm flex flex-col">
                 <div className="text-center pb-2 mb-2 border-b border-[#E4EEF8]">

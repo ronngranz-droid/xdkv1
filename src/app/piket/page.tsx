@@ -279,8 +279,8 @@ export default function PiketPage() {
                 <span className="text-[11px] text-white/90">Adel, Selly, Alinda...</span>
               </div>
               <div className="bg-white/10 rounded-2xl p-2.5 border border-white/15 backdrop-blur-xs">
-                <span className="text-xs font-bold block text-yellow-300">Jumat (4 Siswa)</span>
-                <span className="text-[11px] text-white/90">Natasya, Dheana, Juwita, Ira</span>
+                <span className="text-xs font-bold block text-yellow-300">Jumat (3 Siswa)</span>
+                <span className="text-[11px] text-white/90">Natasya, Dheana, Juwita</span>
               </div>
               <div className="bg-white/10 rounded-2xl p-2.5 border border-white/15 backdrop-blur-xs flex items-center justify-center">
                 <button

@@ -51,8 +51,8 @@ export default function HeroBanner() {
 
       {/* Main Content (Center Typography matching TikTok screenshot) */}
       <div className="relative z-10 px-6 py-14 sm:py-20 md:py-24 lg:py-28 flex flex-col items-center justify-center text-center space-y-4 sm:space-y-6">
-        {/* Cute Pill Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white text-xs font-bold shadow-md">
+        {/* Cute Pill Badge with Gemoy Bounce */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/40 text-white text-xs font-bold shadow-md animate-bounce-gemoy hover:scale-105 transition-transform cursor-default">
           <Sparkles className="w-3.5 h-3.5 text-yellow-300 animate-spin-slow" />
           <span>Website Resmi Kelas {state.classInfo.name}</span>
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
