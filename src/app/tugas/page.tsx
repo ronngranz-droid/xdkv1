@@ -22,6 +22,9 @@ import {
   CheckCircle,
   ChevronRight,
   FolderGit2,
+  Megaphone,
+  BellRing,
+  Info,
 } from 'lucide-react';
 import { useClassData } from '@/context/ClassDataContext';
 import { ClassAssignment } from '@/types';
@@ -31,7 +34,7 @@ export default function TugasPage() {
   const { state, addAssignment, deleteAssignment, toggleAssignmentCompleted } = useClassData();
 
   // Filter States
-  const [activeTab, setActiveTab] = useState<'semua' | 'mendesak' | 'pending' | 'selesai'>('semua');
+  const [activeTab, setActiveTab] = useState<'semua' | 'tugas' | 'pemberitahuan' | 'mendesak' | 'pending' | 'selesai'>('semua');
   const [selectedSubject, setSelectedSubject] = useState<string>('Semua');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -46,8 +49,9 @@ export default function TugasPage() {
     setTodayTime(now.getTime());
   }, []);
 
-  // New Assignment Form State
+  // New Assignment / Announcement Form State
   const [formData, setFormData] = useState({
+    category: 'Tugas' as 'Tugas' | 'Pemberitahuan',
     title: '',
     subject: 'PDKV',
     customSubject: '',
@@ -109,7 +113,14 @@ export default function TugasPage() {
     return assignments.filter((asg) => {
       // Tab filter
       const status = getDeadlineStatus(asg.deadline);
-      if (activeTab === 'mendesak') {
+      const isNotice = asg.category === 'Pemberitahuan';
+      const isTask = asg.category !== 'Pemberitahuan';
+
+      if (activeTab === 'tugas') {
+        if (!isTask) return false;
+      } else if (activeTab === 'pemberitahuan') {
+        if (!isNotice) return false;
+      } else if (activeTab === 'mendesak') {
         if (asg.isCompleted || (!status.isUrgent && status.days > 2)) return false;
       } else if (activeTab === 'pending') {
         if (asg.isCompleted) return false;
@@ -138,6 +149,8 @@ export default function TugasPage() {
 
   // Statistics
   const totalCount = assignments.length;
+  const taskCount = assignments.filter((a) => a.category !== 'Pemberitahuan').length;
+  const noticeCount = assignments.filter((a) => a.category === 'Pemberitahuan').length;
   const pendingCount = assignments.filter((a) => !a.isCompleted).length;
   const completedCount = assignments.filter((a) => a.isCompleted).length;
   const urgentCount = assignments.filter((a) => !a.isCompleted && getDeadlineStatus(a.deadline).isUrgent).length;
@@ -147,31 +160,33 @@ export default function TugasPage() {
     e.preventDefault();
     if (!formData.title.trim() || !formData.deadline) return;
 
-    const actualSubject = formData.subject === 'Lainnya' && formData.customSubject.trim()
-      ? formData.customSubject.trim()
-      : formData.subject;
+    const actualSubject = formData.category === 'Pemberitahuan'
+      ? (formData.subject === 'Lainnya' && formData.customSubject.trim() ? formData.customSubject.trim() : formData.subject || 'Pemberitahuan Kelas')
+      : (formData.subject === 'Lainnya' && formData.customSubject.trim() ? formData.customSubject.trim() : formData.subject);
 
     addAssignment({
+      category: formData.category,
       title: formData.title.trim(),
       subject: actualSubject,
       teacher: formData.teacher.trim(),
-      announcedBy: formData.announcedBy || 'Pengurus Kelas X DKV 1',
+      announcedBy: formData.announcedBy || 'Dea Anggia (Sekretaris 1)',
       deadline: formData.deadline,
       deadlineTime: formData.deadlineTime || '23:59',
       description: formData.description.trim(),
       type: formData.type,
-      submissionType: formData.submissionType,
+      submissionType: formData.category === 'Pemberitahuan' ? 'Tidak Ada (Info)' : formData.submissionType,
       priority: formData.priority,
       isCompleted: false,
     });
 
     setIsAddModalOpen(false);
     setFormData({
+      category: 'Tugas',
       title: '',
       subject: 'PDKV',
       customSubject: '',
       teacher: 'Pak Derri',
-      announcedBy: 'Kesya (Sekretaris 1)',
+      announcedBy: 'Dea Anggia (Sekretaris 1)',
       deadline: '',
       deadlineTime: '23:59',
       description: '',
@@ -184,20 +199,24 @@ export default function TugasPage() {
   // Copy Rekap to WhatsApp
   const handleCopyWhatsAppFormat = () => {
     const uncompleted = assignments.filter((a) => !a.isCompleted);
-    let text = `📢 *REKAP TUGAS & PR KELAS ${state.classInfo.name}*\n`;
+    let text = `📢 *REKAP TUGAS & PEMBERITAHUAN KELAS ${state.classInfo.name}*\n`;
     text += `Diperbarui: ${new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}\n`;
     text += `------------------------------------\n\n`;
 
     if (uncompleted.length === 0) {
-      text += `🎉 Alhamdulillah saat ini belum ada tugas pending! Nikmati waktu santai.\n`;
+      text += `🎉 Alhamdulillah saat ini belum ada tugas atau pengumuman pending! Nikmati waktu santai.\n`;
     } else {
       uncompleted.forEach((a, idx) => {
         const stat = getDeadlineStatus(a.deadline);
-        text += `*${idx + 1}. [${a.subject}] ${a.title}*\n`;
-        if (a.teacher) text += `   • Guru: ${a.teacher}\n`;
-        text += `   • Deadline: ${a.deadline} (${a.deadlineTime || '23:59'}) [${stat.label}]\n`;
-        text += `   • Tipe: ${a.type} | Kumpul via: ${a.submissionType}\n`;
-        if (a.description) text += `   • Catatan: ${a.description}\n`;
+        const prefix = a.category === 'Pemberitahuan' ? '📢 [PEMBERITAHUAN]' : `📝 [${a.subject}]`;
+        text += `*${idx + 1}. ${prefix} ${a.title}*\n`;
+        if (a.announcedBy) text += `   • Dari: ${a.announcedBy}\n`;
+        if (a.teacher && a.teacher !== '-') text += `   • Guru: ${a.teacher}\n`;
+        text += `   • Batas/Waktu: ${a.deadline} (${a.deadlineTime || '23:59'}) [${stat.label}]\n`;
+        if (a.category !== 'Pemberitahuan') {
+          text += `   • Tipe: ${a.type} | Kumpul via: ${a.submissionType}\n`;
+        }
+        if (a.description) text += `   • Rincian: ${a.description}\n`;
         text += `\n`;
       });
     }
@@ -222,14 +241,14 @@ export default function TugasPage() {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#DEF0FC] border border-[#BEE0F9] text-xs font-bold text-[#263B50]">
-              <BookOpen className="w-3.5 h-3.5 text-[#5A9FE8]" />
-              <span>Agenda Akademik & Proyek Desain • Kelas {state.classInfo.name}</span>
+              <Megaphone className="w-3.5 h-3.5 text-[#5A9FE8]" />
+              <span>Agenda Akademik & Pengumuman Resmi • Kelas {state.classInfo.name}</span>
             </div>
             <h1 className="text-2xl sm:text-4xl font-black text-[#263B50] tracking-tight">
-              Papan Tugas & PR Kelas
+              Papan Tugas & Pemberitahuan Kelas
             </h1>
             <p className="text-xs sm:text-sm text-[#647E99] max-w-2xl leading-relaxed">
-              Daftar seluruh tugas, PR, dan proyek praktik kejuruan DKV lengkap dengan tenggat waktu, guru pengampu, serta media pengumpulan agar tugas tidak menumpuk!
+              Pusat informasi resmi pengurus kelas: pengumuman agenda, tugas mandiri/kelompok, PR mapel produktif DKV, dan edaran penting dengan notifikasi deadline otomatis!
             </p>
           </div>
 
@@ -247,24 +266,56 @@ export default function TugasPage() {
 
             <button
               type="button"
-              onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-[#8BB4E7] hover:bg-[#7BAEDB] text-white text-xs font-bold shadow-md shadow-[#8BB4E7]/30 transition-all hover:scale-102"
+              onClick={() => {
+                setFormData((prev) => ({ ...prev, category: 'Tugas' }));
+                setIsAddModalOpen(true);
+              }}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-[#8BB4E7] hover:bg-[#7BAEDB] text-white text-xs font-bold shadow-md shadow-[#8BB4E7]/30 transition-all hover:scale-102"
             >
               <Plus className="w-4 h-4" />
-              <span>Tambah Tugas Baru</span>
+              <span>Tambah Tugas</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setFormData((prev) => ({
+                  ...prev,
+                  category: 'Pemberitahuan',
+                  subject: 'Pemberitahuan Kelas',
+                  teacher: '-',
+                  submissionType: 'Tidak Ada (Info)',
+                  type: 'Individu',
+                }));
+                setIsAddModalOpen(true);
+              }}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-[#3BB4CD] hover:bg-[#2fa0b7] text-white text-xs font-bold shadow-md shadow-[#3BB4CD]/30 transition-all hover:scale-102"
+            >
+              <Megaphone className="w-4 h-4" />
+              <span>Buat Pemberitahuan</span>
             </button>
           </div>
         </div>
 
         {/* 2. Quick Counter Metrics Badges */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 border-t border-[#E4EEF8] mt-6">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 pt-6 border-t border-[#E4EEF8] mt-6">
           <div className="bg-[#F7FBFF] rounded-2xl p-3 border border-[#E0EEF9] flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#DEF0FC] text-[#5A9FE8] flex items-center justify-center font-black">
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] text-[#647E99] font-semibold block">Total Tugas</span>
+              <span className="text-[11px] text-[#647E99] font-semibold block">Semua Info</span>
               <span className="text-lg font-black text-[#263B50]">{totalCount}</span>
+            </div>
+          </div>
+
+          <div className="bg-[#F7FBFF] rounded-2xl p-3 border border-[#E0EEF9] flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-black">
+              <Megaphone className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="text-[11px] text-[#647E99] font-semibold block">Pemberitahuan</span>
+              <span className="text-lg font-black text-purple-700">{noticeCount}</span>
             </div>
           </div>
 
@@ -293,7 +344,7 @@ export default function TugasPage() {
               <CheckCircle className="w-5 h-5" />
             </div>
             <div>
-              <span className="text-[11px] text-[#647E99] font-semibold block">Sudah Selesai</span>
+              <span className="text-[11px] text-[#647E99] font-semibold block">Selesai</span>
               <span className="text-lg font-black text-emerald-700">{completedCount}</span>
             </div>
           </div>
@@ -306,9 +357,11 @@ export default function TugasPage() {
           {/* Status Tab Pills */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
             {[
-              { id: 'semua', label: 'Semua Tugas', count: totalCount },
+              { id: 'semua', label: 'Semua', count: totalCount },
+              { id: 'tugas', label: '📝 Tugas & PR', count: taskCount },
+              { id: 'pemberitahuan', label: '📢 Pemberitahuan', count: noticeCount },
               { id: 'mendesak', label: '🔥 Deadline Dekat', count: urgentCount },
-              { id: 'pending', label: '📝 Belum Selesai', count: pendingCount },
+              { id: 'pending', label: '⏳ Belum Selesai', count: pendingCount },
               { id: 'selesai', label: '✅ Selesai', count: completedCount },
             ].map((tab) => (
               <button
@@ -407,21 +460,32 @@ export default function TugasPage() {
                 }`}
               >
                 <div>
-                  {/* Top Header: Subject & Countdown Pill */}
+                  {/* Top Header: Category, Subject & Countdown Pill */}
                   <div className="flex items-start justify-between gap-2 pb-3 mb-3 border-b border-[#F1F5F9]">
-                    <div className="flex items-center gap-2">
-                      <span className="px-3 py-1 rounded-xl bg-[#DEF0FC] text-[#263B50] font-black text-xs border border-[#BEE0F9]">
-                        {asg.subject}
-                      </span>
+                    <div className="flex flex-wrap items-center gap-1.5">
                       <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          asg.type === 'Kelompok'
-                            ? 'bg-purple-100 text-purple-700 border border-purple-200'
-                            : 'bg-slate-100 text-slate-700 border border-slate-200'
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-black border flex items-center gap-1 ${
+                          asg.category === 'Pemberitahuan'
+                            ? 'bg-purple-100 text-purple-800 border-purple-200'
+                            : 'bg-blue-100 text-blue-800 border-blue-200'
                         }`}
                       >
-                        {asg.type}
+                        {asg.category === 'Pemberitahuan' ? '📢 Info / Edaran' : '📝 Tugas PR'}
                       </span>
+                      <span className="px-2.5 py-0.5 rounded-xl bg-[#DEF0FC] text-[#263B50] font-black text-xs border border-[#BEE0F9]">
+                        {asg.subject}
+                      </span>
+                      {asg.category !== 'Pemberitahuan' && (
+                        <span
+                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            asg.type === 'Kelompok'
+                              ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                              : 'bg-slate-100 text-slate-700 border border-slate-200'
+                          }`}
+                        >
+                          {asg.type}
+                        </span>
+                      )}
                     </div>
 
                     {/* Deadline Countdown Pill */}
@@ -539,15 +603,60 @@ export default function TugasPage() {
             </div>
 
             <form onSubmit={handleCreateAssignment} className="space-y-4">
-              {/* Judul Tugas */}
+              {/* Pilihan Kategori: Tugas vs Pemberitahuan */}
+              <div>
+                <label className="block text-xs font-bold text-[#263B50] mb-1.5">
+                  Jenis Informasi *
+                </label>
+                <div className="grid grid-cols-2 gap-2 p-1 rounded-2xl bg-[#F0F7FD] border border-[#E0EEF9]">
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, category: 'Tugas' })}
+                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                      formData.category === 'Tugas'
+                        ? 'bg-white text-[#263B50] shadow-sm border border-[#DCEEFB]'
+                        : 'text-[#647E99] hover:text-[#263B50]'
+                    }`}
+                  >
+                    <BookOpen className="w-3.5 h-3.5 text-[#5A9FE8]" />
+                    <span>📝 Tugas / PR</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData({
+                        ...formData,
+                        category: 'Pemberitahuan',
+                        subject: 'Pemberitahuan Kelas',
+                        teacher: '-',
+                        submissionType: 'Tidak Ada (Info)',
+                      })
+                    }
+                    className={`py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                      formData.category === 'Pemberitahuan'
+                        ? 'bg-white text-[#263B50] shadow-sm border border-[#DCEEFB]'
+                        : 'text-[#647E99] hover:text-[#263B50]'
+                    }`}
+                  >
+                    <Megaphone className="w-3.5 h-3.5 text-[#3BB4CD]" />
+                    <span>📢 Pemberitahuan</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Judul Informasi */}
               <div>
                 <label className="block text-xs font-bold text-[#263B50] mb-1">
-                  Judul Tugas / Nama PR *
+                  {formData.category === 'Pemberitahuan' ? 'Judul Pengumuman / Info *' : 'Judul Tugas / Nama PR *'}
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: Sketsa Logo Vektor Varian 1"
+                  placeholder={
+                    formData.category === 'Pemberitahuan'
+                      ? 'Contoh: Pengambilan Seragam Praktek / Iuran Kas Kelas'
+                      : 'Contoh: Sketsa Logo Vektor Varian 1'
+                  }
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="w-full px-3.5 py-2.5 rounded-2xl bg-[#F7FBFF] border border-[#E0EEF9] focus:bg-white focus:border-[#8BB4E7] text-xs font-semibold text-[#263B50] outline-none"
@@ -578,13 +687,16 @@ export default function TugasPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-[#263B50] mb-1">
-                    Mata Pelajaran *
+                    {formData.category === 'Pemberitahuan' ? 'Kategori / Topik' : 'Mata Pelajaran *'}
                   </label>
                   <select
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
                     className="w-full px-3 py-2 rounded-2xl bg-[#F7FBFF] border border-[#E0EEF9] focus:bg-white focus:border-[#8BB4E7] text-xs font-semibold text-[#263B50] outline-none"
                   >
+                    {formData.category === 'Pemberitahuan' && (
+                      <option value="Pemberitahuan Kelas">Pemberitahuan Kelas</option>
+                    )}
                     {subjectsList.map((s) => (
                       <option key={s} value={s}>{s}</option>
                     ))}
@@ -674,6 +786,9 @@ export default function TugasPage() {
                     onChange={(e) => setFormData({ ...formData, submissionType: e.target.value as any })}
                     className="w-full px-3 py-2 rounded-2xl bg-[#F7FBFF] border border-[#E0EEF9] text-xs font-semibold text-[#263B50] outline-none"
                   >
+                    {formData.category === 'Pemberitahuan' && (
+                      <option value="Tidak Ada (Info)">Tidak Ada Pengumpulan (Info Saja)</option>
+                    )}
                     <option value="Google Classroom">Google Classroom</option>
                     <option value="Buku / Kertas">Buku / Kertas Folio / Gambar</option>
                     <option value="Link Drive">Link Google Drive</option>

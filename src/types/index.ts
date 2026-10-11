@@ -152,15 +152,16 @@ export interface ClassSong {
 
 export interface ClassAssignment {
   id: string;
+  category?: 'Tugas' | 'Pemberitahuan'; // 'Tugas' (ada deadline & submit) atau 'Pemberitahuan' (info resmi/edaran)
   title: string;
   subject: string;
   teacher?: string;
-  announcedBy?: string; // e.g. "Kesya (Sekretaris 1)", "Ahmad Zalqi (Ketua)", "Pengurus Kelas"
+  announcedBy?: string; // e.g. "Dea Anggia (Sekretaris 1)", "Ahmad Zalqi (Ketua)", "Pengurus Kelas"
   deadline: string; // Format YYYY-MM-DD
   deadlineTime?: string; // Format HH:mm, e.g. "23:59"
   description: string;
   type: 'Individu' | 'Kelompok';
-  submissionType: 'Google Classroom' | 'Buku / Kertas' | 'Flashdisk / File' | 'Link Drive' | 'Langsung di Kelas';
+  submissionType: 'Google Classroom' | 'Buku / Kertas' | 'Flashdisk / File' | 'Link Drive' | 'Langsung di Kelas' | 'Tidak Ada (Info)';
   isCompleted?: boolean;
   priority: 'Tinggi' | 'Sedang' | 'Biasa';
   createdAt: string;

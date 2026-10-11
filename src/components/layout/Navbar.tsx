@@ -73,7 +73,7 @@ export default function Navbar() {
   const navLinks = [
     { href: '/', label: 'Beranda', icon: LayoutDashboard },
     { href: '/jadwal', label: 'Jadwal', icon: CalendarDays },
-    { href: '/tugas', label: 'Tugas', icon: BookOpen },
+    { href: '/tugas', label: 'Tugas & Info', icon: BookOpen },
     { href: '/struktur', label: 'Struktur', icon: Users },
     { href: '/piket', label: 'Piket', icon: Sparkles },
     { href: '/anggota', label: 'Warga Kelas', icon: Users },

@@ -279,7 +279,24 @@ export const initialMemories: PolaroidMemory[] = [
 
 export const initialAssignments: ClassAssignment[] = [
   {
+    id: 'asg-notif-1',
+    category: 'Pemberitahuan',
+    title: 'Edaran Jadwal Pengambilan Seragam Praktek & Perlengkapan DKV',
+    subject: 'Pemberitahuan Kelas',
+    teacher: 'Ibu Marleni',
+    announcedBy: 'Ahmad Zalqi (Ketua Kelas)',
+    deadline: '2026-10-17',
+    deadlineTime: '12:00',
+    description: 'Diberitahukan kepada seluruh warga kelas X DKV 1 untuk melunasi dan mengambil rompi praktek serta perlengkapan gambar di ruang koperasi siswa paling lambat hari Sabtu sebelum jam istirahat kedua.',
+    type: 'Individu',
+    submissionType: 'Tidak Ada (Info)',
+    priority: 'Tinggi',
+    isCompleted: false,
+    createdAt: '2026-10-11',
+  },
+  {
     id: 'asg-1',
+    category: 'Tugas',
     title: 'Sketsa & Vektor Logo Monogram DKV',
     subject: 'PDKV',
     teacher: 'Pak Derri',
@@ -295,6 +312,7 @@ export const initialAssignments: ClassAssignment[] = [
   },
   {
     id: 'asg-2',
+    category: 'Tugas',
     title: 'Praktik Fotografi Komposisi Rule of Thirds',
     subject: 'Fotografi',
     teacher: 'Bu Amelia',
@@ -310,6 +328,7 @@ export const initialAssignments: ClassAssignment[] = [
   },
   {
     id: 'asg-3',
+    category: 'Tugas',
     title: 'Latihan Soal Barisan & Deret Geometri',
     subject: 'Matematika',
     teacher: 'Pak Angga',
@@ -325,6 +344,7 @@ export const initialAssignments: ClassAssignment[] = [
   },
   {
     id: 'asg-4',
+    category: 'Tugas',
     title: 'Laporan Analisis Data & Rumus Spreadsheet',
     subject: 'Informatika',
     teacher: 'Bu Desi',
