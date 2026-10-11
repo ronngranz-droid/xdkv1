@@ -18,7 +18,7 @@ import {
 // ==========================================
 export const officialStudentRoster: Array<{ name: string; picketDay?: 'Senin' | 'Selasa' | 'Rabu' | 'Kamis' | 'Jumat'; role?: string }> = [
   // --- REGU SENIN (6 SISWA) ---
-  { name: 'Kesya', picketDay: 'Senin', role: 'Sekretaris 1' },
+  { name: 'Kesya', picketDay: 'Senin', role: 'Sekretaris 2' },
   { name: 'Suwitri', picketDay: 'Senin' },
   { name: 'Sasa', picketDay: 'Senin' },
   { name: 'Filsya', picketDay: 'Senin' },
@@ -36,7 +36,7 @@ export const officialStudentRoster: Array<{ name: string; picketDay?: 'Senin' | 
 
   // --- REGU RABU (7 SISWA) ---
   { name: 'Tiara', picketDay: 'Rabu' },
-  { name: 'Dea', picketDay: 'Rabu', role: 'Sekretaris 2' },
+  { name: 'Dea', picketDay: 'Rabu', role: 'Sekretaris 1' },
   { name: 'Wildea', picketDay: 'Rabu' },
   { name: 'Evaa', picketDay: 'Rabu' },
   { name: 'Zilfa', picketDay: 'Rabu' },
@@ -44,8 +44,8 @@ export const officialStudentRoster: Array<{ name: string; picketDay?: 'Senin' | 
   { name: 'Aprilia', picketDay: 'Rabu' },
 
   // --- REGU KAMIS (7 SISWA) ---
-  { name: 'Adel', picketDay: 'Kamis', role: 'Bendahara 2' },
-  { name: 'Selly', picketDay: 'Kamis', role: 'Bendahara 1' },
+  { name: 'Adel', picketDay: 'Kamis', role: 'Bendahara 1' },
+  { name: 'Selly', picketDay: 'Kamis', role: 'Bendahara 2' },
   { name: 'Alinda', picketDay: 'Kamis' },
   { name: 'Pina', picketDay: 'Kamis' },
   { name: 'Sahrini', picketDay: 'Kamis' },
@@ -59,8 +59,8 @@ export const officialStudentRoster: Array<{ name: string; picketDay?: 'Senin' | 
 
   // --- TIM MBG & PENGURUS KELAS KHUSUS (5 SISWA) ---
   { name: 'Ahmad Zalqi', role: 'Ketua Kelas & Tim MBG' },
+  { name: 'Sri Mulyaningtyas', role: 'Wakil Ketua Kelas' },
   { name: 'Ilham', role: 'Tim MBG' },
-  { name: 'Arsil' },
   { name: 'Andre', role: 'Tim MBG' },
   { name: 'Riza', role: 'Tim MBG' },
 ];
@@ -95,7 +95,7 @@ export const initialOrgHierarchy: OrgNode[] = [
     positionKey: 'ketua_kelas',
     title: 'Ketua Kelas',
     department: 'Pimpinan',
-    customName: 'Ahmad Zalqi Putra I.',
+    customName: 'Ahmad Zalqi',
     customNote: 'Ketua Kelas X DKV 1',
   },
   {
@@ -107,30 +107,30 @@ export const initialOrgHierarchy: OrgNode[] = [
   },
   {
     positionKey: 'sekretaris_1',
-    title: 'Sekretaris',
+    title: 'Sekretaris 1',
     department: 'Administrasi',
-    customName: 'Kesya',
+    customName: 'Dea Anggia',
     customNote: 'Sekretaris 1 X DKV 1',
   },
   {
     positionKey: 'sekretaris_2',
-    title: 'Sekretaris',
+    title: 'Sekretaris 2',
     department: 'Administrasi',
-    customName: 'Dea Anggia',
+    customName: 'Kesya',
     customNote: 'Sekretaris 2 X DKV 1',
   },
   {
     positionKey: 'bendahara_1',
-    title: 'Bendahara',
+    title: 'Bendahara 1',
     department: 'Administrasi',
-    customName: 'Selly Susanti',
+    customName: 'Adel',
     customNote: 'Bendahara 1 X DKV 1',
   },
   {
     positionKey: 'bendahara_2',
-    title: 'Bendahara',
+    title: 'Bendahara 2',
     department: 'Administrasi',
-    customName: 'Adelia',
+    customName: 'Selly',
     customNote: 'Bendahara 2 X DKV 1',
   },
 ];
@@ -283,7 +283,7 @@ export const initialAssignments: ClassAssignment[] = [
     title: 'Sketsa & Vektor Logo Monogram DKV',
     subject: 'PDKV',
     teacher: 'Pak Derri',
-    announcedBy: 'Kesya (Sekretaris 1)',
+    announcedBy: 'Dea Anggia (Sekretaris 1)',
     deadline: '2026-10-14',
     deadlineTime: '23:59',
     description: 'Buat 3 alternatif sketsa logo monogram inisial nama sendiri di buku sketsa, lalu digitalisasi 1 pilihan terbaik menggunakan software vektor (CorelDraw / Illustrator). Simpan format PDF & PNG transparan.',
@@ -313,7 +313,7 @@ export const initialAssignments: ClassAssignment[] = [
     title: 'Latihan Soal Barisan & Deret Geometri',
     subject: 'Matematika',
     teacher: 'Pak Angga',
-    announcedBy: 'Dea (Sekretaris 2)',
+    announcedBy: 'Kesya (Sekretaris 2)',
     deadline: '2026-10-15',
     deadlineTime: '07:15',
     description: 'Kerjakan latihan soal halaman 42 nomor 1 sampai 10 di buku latihan catatan matematika lengkap dengan cara pengerjaan sebelum jam masuk.',
@@ -328,7 +328,7 @@ export const initialAssignments: ClassAssignment[] = [
     title: 'Laporan Analisis Data & Rumus Spreadsheet',
     subject: 'Informatika',
     teacher: 'Bu Desi',
-    announcedBy: 'Selly (Bendahara 1)',
+    announcedBy: 'Adel (Bendahara 1)',
     deadline: '2026-10-18',
     deadlineTime: '21:00',
     description: 'Kerjakan lembar kerja rumus IF bersarang, VLOOKUP, dan SUMIFS pada file Excel yang telah dibagikan di grup kelas.',

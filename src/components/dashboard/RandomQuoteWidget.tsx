@@ -9,8 +9,11 @@ export default function RandomQuoteWidget() {
 
   const quotesList = [
     { text: 'Jangan biarkan revisi desain grafis merenggut senyuman manismu.', author: 'Ahmad Zalqi (Ketua Kelas)' },
-    { text: 'Selalu save file karyamu sebelum aplikasi desain not responding!', author: 'Kesya (Sekretaris)' },
-    { text: 'Kunci ketenangan hidup warga kelas: bayar uang kas tepat waktu.', author: 'Selly Susanti (Bendahara)' },
+    { text: 'Semangat berkarya dan jaga kekompakan selalu di setiap langkah.', author: 'Sri Mulyaningtyas (Wakil Ketua)' },
+    { text: 'Selalu save file karyamu sebelum aplikasi desain not responding!', author: 'Dea Anggia (Sekretaris 1)' },
+    { text: 'Catatan rapi dan tugas selesai tepat waktu adalah kunci sukses kita.', author: 'Kesya (Sekretaris 2)' },
+    { text: 'Kunci ketenangan hidup warga kelas: bayar uang kas tepat waktu!', author: 'Adel (Bendahara 1)' },
+    { text: 'Tertib administrasi kas kelas, lancar semua kegiatan kita.', author: 'Selly (Bendahara 2)' },
     { text: 'Makan siang bergizi gratis tepat waktu, belajar makin bersemangat!', author: 'Tim MBG (Riza, Zalqi, Ilham)' },
     { text: 'Warna boleh nabrak, tapi pertemanan X DKV 1 jangan sampai retak!', author: 'Warga X DKV 1' },
     { text: 'Kompak selalu X DKV 1, karya terindah lahir dari kebersamaan.', author: 'Ibu Marleni (Wali Kelas)' },

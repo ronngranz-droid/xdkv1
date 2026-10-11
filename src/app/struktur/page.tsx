@@ -106,7 +106,7 @@ export default function StrukturPage() {
                 <span>KETUA KELAS</span>
               </span>
               <div className="w-full bg-white text-[#1E3A2F] py-2.5 px-4 rounded-xl shadow-md border-2 border-emerald-100 font-black text-xs sm:text-sm tracking-wide uppercase">
-                AHMAD ZALQI PUTRA I.
+                AHMAD ZALQI
               </div>
             </div>
 
@@ -132,11 +132,13 @@ export default function StrukturPage() {
                 <span>SEKRETARIS</span>
               </span>
               <div className="w-full space-y-1.5">
-                <div className="w-full bg-white text-[#1E3A2F] py-2 px-3 rounded-xl shadow-sm border border-emerald-100 font-black text-xs sm:text-sm tracking-wide uppercase">
-                  KESYA
+                <div className="w-full bg-white text-[#1E3A2F] py-2 px-3 rounded-xl shadow-sm border border-emerald-100 font-black text-xs sm:text-sm tracking-wide uppercase flex items-center justify-between">
+                  <span>DEA ANGGIA</span>
+                  <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">Sekre 1</span>
                 </div>
-                <div className="w-full bg-white text-[#1E3A2F] py-2 px-3 rounded-xl shadow-sm border border-emerald-100 font-black text-xs sm:text-sm tracking-wide uppercase">
-                  DEA ANGGIA
+                <div className="w-full bg-white text-[#1E3A2F] py-2 px-3 rounded-xl shadow-sm border border-emerald-100 font-black text-xs sm:text-sm tracking-wide uppercase flex items-center justify-between">
+                  <span>KESYA</span>
+                  <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full">Sekre 2</span>
                 </div>
               </div>
             </div>
@@ -148,11 +150,13 @@ export default function StrukturPage() {
                 <span>BENDAHARA</span>
               </span>
               <div className="w-full space-y-1.5">
-                <div className="w-full bg-white text-[#1E3A2F] py-2 px-3 rounded-xl shadow-sm border border-emerald-100 font-black text-xs sm:text-sm tracking-wide uppercase">
-                  SELLY SUSANTI
+                <div className="w-full bg-white text-[#1E3A2F] py-2 px-3 rounded-xl shadow-sm border border-emerald-100 font-black text-xs sm:text-sm tracking-wide uppercase flex items-center justify-between">
+                  <span>ADEL</span>
+                  <span className="text-[10px] text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-full">Bendahara 1</span>
                 </div>
-                <div className="w-full bg-white text-[#1E3A2F] py-2 px-3 rounded-xl shadow-sm border border-emerald-100 font-black text-xs sm:text-sm tracking-wide uppercase">
-                  ADELIA
+                <div className="w-full bg-white text-[#1E3A2F] py-2 px-3 rounded-xl shadow-sm border border-emerald-100 font-black text-xs sm:text-sm tracking-wide uppercase flex items-center justify-between">
+                  <span>SELLY</span>
+                  <span className="text-[10px] text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-full">Bendahara 2</span>
                 </div>
               </div>
             </div>

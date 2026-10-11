@@ -52,7 +52,7 @@ export default function TugasPage() {
     subject: 'PDKV',
     customSubject: '',
     teacher: 'Pak Derri',
-    announcedBy: 'Kesya (Sekretaris 1)',
+    announcedBy: 'Dea Anggia (Sekretaris 1)',
     deadline: '',
     deadlineTime: '23:59',
     description: '',
@@ -564,11 +564,12 @@ export default function TugasPage() {
                   onChange={(e) => setFormData({ ...formData, announcedBy: e.target.value })}
                   className="w-full px-3.5 py-2 rounded-2xl bg-[#F7FBFF] border border-[#E0EEF9] focus:bg-white focus:border-[#8BB4E7] text-xs font-semibold text-[#263B50] outline-none"
                 >
-                  <option value="Kesya (Sekretaris 1)">Kesya (Sekretaris 1)</option>
-                  <option value="Dea (Sekretaris 2)">Dea (Sekretaris 2)</option>
+                  <option value="Dea Anggia (Sekretaris 1)">Dea Anggia (Sekretaris 1)</option>
+                  <option value="Kesya (Sekretaris 2)">Kesya (Sekretaris 2)</option>
                   <option value="Ahmad Zalqi (Ketua Kelas)">Ahmad Zalqi (Ketua Kelas)</option>
-                  <option value="Selly (Bendahara 1)">Selly (Bendahara 1)</option>
-                  <option value="Adel (Bendahara 2)">Adel (Bendahara 2)</option>
+                  <option value="Sri Mulyaningtyas (Wakil Ketua)">Sri Mulyaningtyas (Wakil Ketua)</option>
+                  <option value="Adel (Bendahara 1)">Adel (Bendahara 1)</option>
+                  <option value="Selly (Bendahara 2)">Selly (Bendahara 2)</option>
                   <option value="Pengurus Kelas X DKV 1">Pengurus Kelas X DKV 1</option>
                 </select>
               </div>

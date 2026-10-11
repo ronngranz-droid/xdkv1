@@ -64,7 +64,7 @@ interface ClassDataContextType {
   importDataFromJson: (jsonString: string) => boolean;
 }
 
-const STORAGE_KEY = 'classhub_data_v9';
+const STORAGE_KEY = 'classhub_data_v10';
 const ADMIN_AUTH_KEY = 'classhub_admin_session';
 const ADMIN_DEFAULT_PASSWORD = 'admin';
 
@@ -78,7 +78,7 @@ export function ClassDataProvider({ children }: { children: React.ReactNode }) {
   // Initialize from LocalStorage
   useEffect(() => {
     try {
-      const savedData = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('classhub_data_v8');
+      const savedData = localStorage.getItem(STORAGE_KEY);
       if (savedData) {
         const parsed = JSON.parse(savedData);
         if (parsed && parsed.classInfo && parsed.students) {
@@ -86,6 +86,7 @@ export function ClassDataProvider({ children }: { children: React.ReactNode }) {
           setState({
             ...initialClassHubState,
             ...parsed,
+            orgHierarchy: parsed.orgHierarchy || initialClassHubState.orgHierarchy,
             assignments: parsed.assignments && parsed.assignments.length > 0 ? parsed.assignments : initialClassHubState.assignments,
             memories: parsed.memories && parsed.memories.length > 0 ? parsed.memories : initialClassHubState.memories,
             menfess: parsed.menfess && parsed.menfess.length > 0 ? parsed.menfess : initialClassHubState.menfess,

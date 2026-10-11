@@ -54,19 +54,19 @@ export default function AnggotaPage() {
     if (n.includes('zalqi') || n.includes('ahmad zalqi')) {
       return { role: 'Ketua Kelas', icon: Crown, badgeColor: 'bg-amber-100 text-amber-800 border-amber-300' };
     }
-    if (n.includes('suwitri') || n.includes('sri')) {
+    if (n.includes('sri') || n.includes('mulyaningtyas')) {
       return { role: 'Wakil Ketua', icon: Shield, badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-300' };
     }
-    if (n.includes('kesya')) {
+    if (n.includes('dea')) {
       return { role: 'Sekretaris 1', icon: BookOpen, badgeColor: 'bg-pink-100 text-pink-800 border-pink-300' };
     }
-    if (n.includes('dea')) {
+    if (n.includes('kesya')) {
       return { role: 'Sekretaris 2', icon: BookOpen, badgeColor: 'bg-pink-100 text-pink-800 border-pink-300' };
     }
-    if (n.includes('selly')) {
+    if (n.includes('adel')) {
       return { role: 'Bendahara 1', icon: DollarSign, badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300' };
     }
-    if (n.includes('adel')) {
+    if (n.includes('selly')) {
       return { role: 'Bendahara 2', icon: DollarSign, badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300' };
     }
     if (n.includes('riza') || n.includes('ilham') || n.includes('andre') || n.includes('akbar')) {
