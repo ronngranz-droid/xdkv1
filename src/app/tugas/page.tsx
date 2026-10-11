@@ -52,6 +52,7 @@ export default function TugasPage() {
     subject: 'PDKV',
     customSubject: '',
     teacher: 'Pak Derri',
+    announcedBy: 'Kesya (Sekretaris 1)',
     deadline: '',
     deadlineTime: '23:59',
     description: '',
@@ -154,6 +155,7 @@ export default function TugasPage() {
       title: formData.title.trim(),
       subject: actualSubject,
       teacher: formData.teacher.trim(),
+      announcedBy: formData.announcedBy || 'Pengurus Kelas X DKV 1',
       deadline: formData.deadline,
       deadlineTime: formData.deadlineTime || '23:59',
       description: formData.description.trim(),
@@ -168,7 +170,8 @@ export default function TugasPage() {
       title: '',
       subject: 'PDKV',
       customSubject: '',
-      teacher: '',
+      teacher: 'Pak Derri',
+      announcedBy: 'Kesya (Sekretaris 1)',
       deadline: '',
       deadlineTime: '23:59',
       description: '',
@@ -447,6 +450,12 @@ export default function TugasPage() {
                       </p>
                     )}
                   </div>
+
+                  {/* Officer Announcement Badge */}
+                  <div className="flex items-center gap-1.5 text-[10px] text-[#647E99] bg-[#DEF0FC]/60 border border-[#D5E8F8] px-2.5 py-1 rounded-xl mb-3.5">
+                    <span>📢</span>
+                    <span>Diumumkan oleh: <strong className="text-[#263B50]">{asg.announcedBy || 'Pengurus Kelas X DKV 1'}</strong></span>
+                  </div>
                 </div>
 
                 {/* Footer Info: Teacher, Submission, & Actions */}
@@ -543,6 +552,25 @@ export default function TugasPage() {
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="w-full px-3.5 py-2.5 rounded-2xl bg-[#F7FBFF] border border-[#E0EEF9] focus:bg-white focus:border-[#8BB4E7] text-xs font-semibold text-[#263B50] outline-none"
                 />
+              </div>
+
+              {/* Diumumkan Oleh (Pengurus Kelas) */}
+              <div>
+                <label className="block text-xs font-bold text-[#263B50] mb-1">
+                  📢 Diumumkan Oleh (Pengurus Kelas) *
+                </label>
+                <select
+                  value={formData.announcedBy}
+                  onChange={(e) => setFormData({ ...formData, announcedBy: e.target.value })}
+                  className="w-full px-3.5 py-2 rounded-2xl bg-[#F7FBFF] border border-[#E0EEF9] focus:bg-white focus:border-[#8BB4E7] text-xs font-semibold text-[#263B50] outline-none"
+                >
+                  <option value="Kesya (Sekretaris 1)">Kesya (Sekretaris 1)</option>
+                  <option value="Dea (Sekretaris 2)">Dea (Sekretaris 2)</option>
+                  <option value="Ahmad Zalqi (Ketua Kelas)">Ahmad Zalqi (Ketua Kelas)</option>
+                  <option value="Selly (Bendahara 1)">Selly (Bendahara 1)</option>
+                  <option value="Adel (Bendahara 2)">Adel (Bendahara 2)</option>
+                  <option value="Pengurus Kelas X DKV 1">Pengurus Kelas X DKV 1</option>
+                </select>
               </div>
 
               {/* Mapel & Guru */}

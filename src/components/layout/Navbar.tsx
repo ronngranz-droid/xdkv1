@@ -17,6 +17,7 @@ import {
   Clock,
   Heart,
   BookOpen,
+  Bell,
 } from 'lucide-react';
 import { useClassData } from '@/context/ClassDataContext';
 
@@ -25,8 +26,11 @@ export default function Navbar() {
   const router = useRouter();
   const { state, isAdmin } = useClassData();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const pendingAssignments = (state.assignments || []).filter((a) => !a.isCompleted);
 
   useEffect(() => {
     const updateTime = () => {
@@ -162,8 +166,84 @@ export default function Navbar() {
             })}
           </nav>
 
-          {/* Right Side: Avatar & Mobile Toggle */}
+          {/* Right Side: Notification Bell, Avatar & Mobile Toggle */}
           <div className="flex items-center gap-2 shrink-0">
+            {/* Notification Bell with Badge & Dropdown Popover */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                className="relative p-1.5 rounded-full bg-white/20 hover:bg-white/30 text-white transition-all hover:scale-105"
+                title="Pemberitahuan Tugas Kelas"
+              >
+                <Bell className="w-4 h-4" />
+                {pendingAssignments.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center shadow-xs border border-white animate-pulse">
+                    {pendingAssignments.length}
+                  </span>
+                )}
+              </button>
+
+              {/* Notification Popover */}
+              {isNotificationOpen && (
+                <div className="absolute right-0 mt-2 w-72 sm:w-80 bg-white rounded-3xl p-4 shadow-2xl border border-[#DCEEFB] text-[#263B50] z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                  <div className="flex items-center justify-between pb-2 mb-2 border-b border-[#E4EEF8]">
+                    <div className="flex items-center gap-1.5">
+                      <Bell className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
+                      <span className="text-xs font-black uppercase text-[#263B50]">
+                        Pemberitahuan Tugas
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-200">
+                      {pendingAssignments.length} Aktif
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 max-h-60 overflow-y-auto">
+                    {pendingAssignments.length === 0 ? (
+                      <p className="text-xs text-[#647E99] text-center py-4">
+                        🎉 Tidak ada tugas pending!
+                      </p>
+                    ) : (
+                      pendingAssignments.slice(0, 3).map((a) => (
+                        <Link
+                          key={a.id}
+                          href="/tugas"
+                          onClick={() => setIsNotificationOpen(false)}
+                          className="block p-2.5 rounded-2xl bg-[#F7FBFF] hover:bg-[#DEF0FC] border border-[#E4EEF8] transition-colors"
+                        >
+                          <div className="flex items-center justify-between gap-1 mb-1">
+                            <span className="text-[10px] font-bold text-[#5A9FE8]">
+                              {a.subject}
+                            </span>
+                            <span className="text-[9px] text-[#94A3B8]">
+                              {a.deadline}
+                            </span>
+                          </div>
+                          <h5 className="font-bold text-xs text-[#263B50] truncate">
+                            {a.title}
+                          </h5>
+                          <p className="text-[10px] text-[#647E99] mt-0.5">
+                            📢 Oleh: {a.announcedBy || 'Pengurus Kelas'}
+                          </p>
+                        </Link>
+                      ))
+                    )}
+                  </div>
+
+                  <div className="pt-2 mt-2 border-t border-[#E4EEF8] text-center">
+                    <Link
+                      href="/tugas"
+                      onClick={() => setIsNotificationOpen(false)}
+                      className="text-xs font-bold text-[#5A9FE8] hover:underline"
+                    >
+                      Buka Papan Tugas Lengkap →
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Cute Mascot / Profile Avatar */}
             <Link
               href="/struktur"

@@ -6,6 +6,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import FloatingParticles from '@/components/common/FloatingParticles';
 import FloatingBookPreview from '@/components/common/FloatingBookPreview';
+import AssignmentNotificationToast from '@/components/common/AssignmentNotificationToast';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -42,6 +43,8 @@ export default function RootLayout({
             <Footer />
             {/* Interactive floating book preview widget matching reference */}
             <FloatingBookPreview />
+            {/* Notification alert toast for assignments announced by class officers */}
+            <AssignmentNotificationToast />
           </div>
         </ClassDataProvider>
       </body>

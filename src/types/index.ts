@@ -155,6 +155,7 @@ export interface ClassAssignment {
   title: string;
   subject: string;
   teacher?: string;
+  announcedBy?: string; // e.g. "Kesya (Sekretaris 1)", "Ahmad Zalqi (Ketua)", "Pengurus Kelas"
   deadline: string; // Format YYYY-MM-DD
   deadlineTime?: string; // Format HH:mm, e.g. "23:59"
   description: string;
