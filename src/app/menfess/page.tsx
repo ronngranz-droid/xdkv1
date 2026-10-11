@@ -25,9 +25,9 @@ export default function MenfessPage() {
   const [activeTab, setActiveTab] = useState<'ngl' | 'mading'>('ngl');
 
   // NGL State
-  const [nglUsername, setNglUsername] = useState('xdkv1');
+  const [nglUsername, setNglUsername] = useState('xdkv_11');
   const [isEditingUsername, setIsEditingUsername] = useState(false);
-  const [newUsernameInput, setNewUsernameInput] = useState('');
+  const [newUsernameInput, setNewUsernameInput] = useState('xdkv_11');
   const [nglMessage, setNglMessage] = useState('');
   const [nglReceiver, setNglReceiver] = useState('');
   const [nglSender, setNglSender] = useState('');
@@ -42,11 +42,13 @@ export default function MenfessPage() {
   // Load NGL username from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('class_ngl_username');
-    if (saved) {
+    if (saved && saved !== 'xdkv1') {
       setNglUsername(saved);
       setNewUsernameInput(saved);
     } else {
-      setNewUsernameInput('xdkv1');
+      setNglUsername('xdkv_11');
+      setNewUsernameInput('xdkv_11');
+      localStorage.setItem('class_ngl_username', 'xdkv_11');
     }
   }, []);
 

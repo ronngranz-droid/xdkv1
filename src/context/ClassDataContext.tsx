@@ -15,6 +15,7 @@ import {
   PolaroidMemory,
   MenfessMessage,
   ClassPoll,
+  ClassAssignment,
 } from '@/types';
 import { initialClassHubState } from '@/lib/data/initialData';
 
@@ -46,6 +47,11 @@ interface ClassDataContextType {
   addAnnouncement: (announcement: Omit<Announcement, 'id' | 'date'>) => void;
   updateAnnouncement: (id: string, data: Partial<Announcement>) => void;
   deleteAnnouncement: (id: string) => void;
+  // Assignments / PR Kelas
+  addAssignment: (assignment: Omit<ClassAssignment, 'id' | 'createdAt'>) => void;
+  updateAssignment: (id: string, data: Partial<ClassAssignment>) => void;
+  deleteAssignment: (id: string) => void;
+  toggleAssignmentCompleted: (id: string) => void;
   // Fun Classroom Features
   likeMemory: (id: string) => void;
   addMemory: (memory: Omit<PolaroidMemory, 'id' | 'likes'>) => void;
@@ -58,7 +64,7 @@ interface ClassDataContextType {
   importDataFromJson: (jsonString: string) => boolean;
 }
 
-const STORAGE_KEY = 'classhub_data_v8';
+const STORAGE_KEY = 'classhub_data_v9';
 const ADMIN_AUTH_KEY = 'classhub_admin_session';
 const ADMIN_DEFAULT_PASSWORD = 'admin';
 
@@ -72,7 +78,7 @@ export function ClassDataProvider({ children }: { children: React.ReactNode }) {
   // Initialize from LocalStorage
   useEffect(() => {
     try {
-      const savedData = localStorage.getItem(STORAGE_KEY);
+      const savedData = localStorage.getItem(STORAGE_KEY) || localStorage.getItem('classhub_data_v8');
       if (savedData) {
         const parsed = JSON.parse(savedData);
         if (parsed && parsed.classInfo && parsed.students) {
@@ -80,6 +86,7 @@ export function ClassDataProvider({ children }: { children: React.ReactNode }) {
           setState({
             ...initialClassHubState,
             ...parsed,
+            assignments: parsed.assignments && parsed.assignments.length > 0 ? parsed.assignments : initialClassHubState.assignments,
             memories: parsed.memories && parsed.memories.length > 0 ? parsed.memories : initialClassHubState.memories,
             menfess: parsed.menfess && parsed.menfess.length > 0 ? parsed.menfess : initialClassHubState.menfess,
             polls: parsed.polls && parsed.polls.length > 0 ? parsed.polls : initialClassHubState.polls,
@@ -289,6 +296,45 @@ export function ClassDataProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
+  // Assignments Handlers
+  const addAssignment = (assignment: Omit<ClassAssignment, 'id' | 'createdAt'>) => {
+    const today = new Date();
+    const dateStr = today.toISOString().split('T')[0];
+    const newAssignment: ClassAssignment = {
+      ...assignment,
+      id: `asg-${Date.now()}`,
+      createdAt: dateStr,
+      isCompleted: false,
+    };
+    setState((prev) => ({
+      ...prev,
+      assignments: [newAssignment, ...(prev.assignments || [])],
+    }));
+  };
+
+  const updateAssignment = (id: string, data: Partial<ClassAssignment>) => {
+    setState((prev) => ({
+      ...prev,
+      assignments: (prev.assignments || []).map((a) => (a.id === id ? { ...a, ...data } : a)),
+    }));
+  };
+
+  const deleteAssignment = (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      assignments: (prev.assignments || []).filter((a) => a.id !== id),
+    }));
+  };
+
+  const toggleAssignmentCompleted = (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      assignments: (prev.assignments || []).map((a) =>
+        a.id === id ? { ...a, isCompleted: !a.isCompleted } : a
+      ),
+    }));
+  };
+
   // Fun Features Handlers
   const likeMemory = (id: string) => {
     setState((prev) => ({
@@ -395,6 +441,10 @@ export function ClassDataProvider({ children }: { children: React.ReactNode }) {
         addAnnouncement,
         updateAnnouncement,
         deleteAnnouncement,
+        addAssignment,
+        updateAssignment,
+        deleteAssignment,
+        toggleAssignmentCompleted,
         likeMemory,
         addMemory,
         likeMenfess,

@@ -6,6 +6,7 @@ import StatsGrid from '@/components/dashboard/StatsGrid';
 import TodayScheduleCard from '@/components/dashboard/TodayScheduleCard';
 import TodayPicketCard from '@/components/dashboard/TodayPicketCard';
 import PolaroidMemoriesPreview from '@/components/dashboard/PolaroidMemoriesPreview';
+import TodayAssignmentsWidget from '@/components/dashboard/TodayAssignmentsWidget';
 import QuickMenfessWidget from '@/components/dashboard/QuickMenfessWidget';
 import RandomQuoteWidget from '@/components/dashboard/RandomQuoteWidget';
 import QuickNavCard from '@/components/dashboard/QuickNavCard';
@@ -32,19 +33,24 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 5. Fun Interactive Zone: Menfess & Quote Semangat Hari Ini */}
+      {/* 5. Agenda Tugas & PR Kelas */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-7">
+          <TodayAssignmentsWidget />
+        </div>
+        <div className="lg:col-span-5">
           <QuickMenfessWidget />
+        </div>
+      </div>
+
+      {/* 6. Quick Nav Portal & Quote Semangat */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-7">
+          <QuickNavCard />
         </div>
         <div className="lg:col-span-5">
           <RandomQuoteWidget />
         </div>
-      </div>
-
-      {/* 6. Quick Nav Portal */}
-      <div>
-        <QuickNavCard />
       </div>
     </div>
   );

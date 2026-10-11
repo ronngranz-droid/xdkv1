@@ -150,6 +150,21 @@ export interface ClassSong {
   vibe: string;
 }
 
+export interface ClassAssignment {
+  id: string;
+  title: string;
+  subject: string;
+  teacher?: string;
+  deadline: string; // Format YYYY-MM-DD
+  deadlineTime?: string; // Format HH:mm, e.g. "23:59"
+  description: string;
+  type: 'Individu' | 'Kelompok';
+  submissionType: 'Google Classroom' | 'Buku / Kertas' | 'Flashdisk / File' | 'Link Drive' | 'Langsung di Kelas';
+  isCompleted?: boolean;
+  priority: 'Tinggi' | 'Sedang' | 'Biasa';
+  createdAt: string;
+}
+
 export interface ClassHubState {
   classInfo: ClassInfo;
   students: Student[];
@@ -159,6 +174,8 @@ export interface ClassHubState {
   picketTasks: PicketTask[];
   picketCompleted: Record<string, boolean>;
   announcements: Announcement[];
+  // Assignments / PR Kelas
+  assignments: ClassAssignment[];
   // Fun features
   memories: PolaroidMemory[];
   menfess: MenfessMessage[];

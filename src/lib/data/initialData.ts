@@ -10,6 +10,7 @@ import {
   MenfessMessage,
   ClassPoll,
   ClassSong,
+  ClassAssignment,
 } from '@/types';
 
 // ==========================================
@@ -276,6 +277,65 @@ export const initialMemories: PolaroidMemory[] = [
   },
 ];
 
+export const initialAssignments: ClassAssignment[] = [
+  {
+    id: 'asg-1',
+    title: 'Sketsa & Vektor Logo Monogram DKV',
+    subject: 'PDKV',
+    teacher: 'Pak Derri',
+    deadline: '2026-10-14',
+    deadlineTime: '23:59',
+    description: 'Buat 3 alternatif sketsa logo monogram inisial nama sendiri di buku sketsa, lalu digitalisasi 1 pilihan terbaik menggunakan software vektor (CorelDraw / Illustrator). Simpan format PDF & PNG transparan.',
+    type: 'Individu',
+    submissionType: 'Google Classroom',
+    priority: 'Tinggi',
+    isCompleted: false,
+    createdAt: '2026-10-10',
+  },
+  {
+    id: 'asg-2',
+    title: 'Praktik Fotografi Komposisi Rule of Thirds',
+    subject: 'Fotografi',
+    teacher: 'Bu Amelia',
+    deadline: '2026-10-16',
+    deadlineTime: '15:00',
+    description: 'Ambil 5 foto di area sekolah dengan menerapkan teknik komposisi Rule of Thirds dan Leading Lines. Jangan diedit berlebihan, kumpulkan file JPEG asli beserta catatan aperture & shutter speed.',
+    type: 'Kelompok',
+    submissionType: 'Link Drive',
+    priority: 'Sedang',
+    isCompleted: false,
+    createdAt: '2026-10-10',
+  },
+  {
+    id: 'asg-3',
+    title: 'Latihan Soal Barisan & Deret Geometri',
+    subject: 'Matematika',
+    teacher: 'Pak Angga',
+    deadline: '2026-10-15',
+    deadlineTime: '07:15',
+    description: 'Kerjakan latihan soal halaman 42 nomor 1 sampai 10 di buku latihan catatan matematika lengkap dengan cara pengerjaan sebelum jam masuk.',
+    type: 'Individu',
+    submissionType: 'Buku / Kertas',
+    priority: 'Sedang',
+    isCompleted: false,
+    createdAt: '2026-10-11',
+  },
+  {
+    id: 'asg-4',
+    title: 'Laporan Analisis Data & Rumus Spreadsheet',
+    subject: 'Informatika',
+    teacher: 'Bu Desi',
+    deadline: '2026-10-18',
+    deadlineTime: '21:00',
+    description: 'Kerjakan lembar kerja rumus IF bersarang, VLOOKUP, dan SUMIFS pada file Excel yang telah dibagikan di grup kelas.',
+    type: 'Individu',
+    submissionType: 'Google Classroom',
+    priority: 'Biasa',
+    isCompleted: false,
+    createdAt: '2026-10-11',
+  },
+];
+
 export const initialMenfess: MenfessMessage[] = [];
 export const initialPolls: ClassPoll[] = [];
 export const initialPlaylist: ClassSong[] = [];
@@ -301,6 +361,7 @@ export const initialClassHubState: ClassHubState = {
   picketTasks: initialPicketTasks,
   picketCompleted: {},
   announcements: initialAnnouncements,
+  assignments: initialAssignments,
   memories: initialMemories,
   menfess: initialMenfess,
   polls: initialPolls,

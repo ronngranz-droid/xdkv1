@@ -16,6 +16,7 @@ import {
   Search,
   Clock,
   Heart,
+  BookOpen,
 } from 'lucide-react';
 import { useClassData } from '@/context/ClassDataContext';
 
@@ -50,22 +51,25 @@ export default function Navbar() {
     const q = searchQuery.toLowerCase().trim();
     if (q.includes('jadwal') || q.includes('mapel') || q.includes('pelajaran')) {
       router.push('/jadwal');
+    } else if (q.includes('tugas') || q.includes('pr') || q.includes('proyek') || q.includes('deadline')) {
+      router.push('/tugas');
     } else if (q.includes('struktur') || q.includes('ketua') || q.includes('wali')) {
       router.push('/struktur');
     } else if (q.includes('piket') || q.includes('bersih')) {
       router.push('/piket');
     } else if (q.includes('foto') || q.includes('momen') || q.includes('galeri')) {
       router.push('/galeri');
-    } else if (q.includes('menfess') || q.includes('pesan') || q.includes('curhat')) {
+    } else if (q.includes('menfess') || q.includes('pesan') || q.includes('curhat') || q.includes('ngl')) {
       router.push('/menfess');
     } else {
-      router.push(`/anggona?q=${encodeURIComponent(searchQuery)}`);
+      router.push(`/anggota?q=${encodeURIComponent(searchQuery)}`);
     }
   };
 
   const navLinks = [
     { href: '/', label: 'Beranda', icon: LayoutDashboard },
     { href: '/jadwal', label: 'Jadwal', icon: CalendarDays },
+    { href: '/tugas', label: 'Tugas', icon: BookOpen },
     { href: '/struktur', label: 'Struktur', icon: Users },
     { href: '/piket', label: 'Piket', icon: Sparkles },
     { href: '/anggota', label: 'Warga Kelas', icon: Users },
@@ -135,6 +139,7 @@ export default function Navbar() {
             {[
               { href: '/', label: 'Beranda' },
               { href: '/jadwal', label: 'Jadwal' },
+              { href: '/tugas', label: 'Tugas' },
               { href: '/struktur', label: 'Struktur' },
               { href: '/piket', label: 'Piket' },
               { href: '/menfess', label: 'Menfess' },
@@ -218,11 +223,11 @@ export default function Navbar() {
       </header>
 
       {/* Floating Bottom Nav for Mobile Devices */}
-      <nav className="md:hidden fixed bottom-3 left-4 right-4 z-40 bg-white/95 backdrop-blur-md rounded-full border border-[#DCEEFB] px-3 py-1.5 flex items-center justify-around shadow-xl shadow-[#8BB4E7]/25">
+      <nav className="md:hidden fixed bottom-3 left-3 right-3 z-40 bg-white/95 backdrop-blur-md rounded-full border border-[#DCEEFB] px-2 py-1.5 flex items-center justify-around shadow-xl shadow-[#8BB4E7]/25">
         {[
           { href: '/', label: 'Beranda', icon: LayoutDashboard },
           { href: '/jadwal', label: 'Jadwal', icon: CalendarDays },
-          { href: '/struktur', label: 'Struktur', icon: Users },
+          { href: '/tugas', label: 'Tugas', icon: BookOpen },
           { href: '/piket', label: 'Piket', icon: Sparkles },
           { href: '/menfess', label: 'Menfess', icon: MessageCircleHeart },
         ].map((item) => {
