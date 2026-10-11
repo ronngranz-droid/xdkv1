@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   CalendarDays,
   Clock,
@@ -12,9 +13,15 @@ import {
   Columns,
   ListFilter,
   Search,
+  Edit3,
+  Plus,
+  Trash2,
+  Check,
+  ShieldCheck,
+  BookOpen,
 } from 'lucide-react';
 import { useClassData } from '@/context/ClassDataContext';
-import { DayOfWeek } from '@/types';
+import { DayOfWeek, ScheduleItem } from '@/types';
 import { getCurrentIndonesianDay } from '@/lib/utils/time';
 import { PastelCloud, PastelStar } from '@/components/common/DecorativeElements';
 
@@ -139,13 +146,34 @@ const schedulePosterData: ScheduleSlot[] = [
 ];
 
 export default function JadwalPage() {
-  const { state } = useClassData();
+  const { state, updateSchedule, addSchedule, deleteSchedule } = useClassData();
   const [currentToday, setCurrentToday] = useState<DayOfWeek>('Senin');
-  const [viewMode, setViewMode] = useState<'poster' | 'harian'>('poster');
+  const [viewMode, setViewMode] = useState<'poster' | 'harian'>('harian');
   const [activeDay, setActiveDay] = useState<DayOfWeek>('Senin');
   const [selectedPosterDay, setSelectedPosterDay] = useState<DayOfWeek | 'Semua'>('Senin');
   const [showPosterModal, setShowPosterModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Editing Mapel State
+  const [editingScheduleItem, setEditingScheduleItem] = useState<ScheduleItem | null>(null);
+  const [isAddScheduleModalOpen, setIsAddScheduleModalOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string>('');
+
+  const [newScheduleForm, setNewScheduleForm] = useState<Omit<ScheduleItem, 'id'>>({
+    day: 'Senin',
+    period: 1,
+    startTime: '07.15',
+    endTime: '08.00',
+    subject: '',
+    teacher: '',
+    room: 'Ruang X DKV 1',
+    isBreak: false,
+  });
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(''), 3000);
+  };
 
   useEffect(() => {
     const today = getCurrentIndonesianDay();
@@ -174,7 +202,19 @@ export default function JadwalPage() {
     <div className="space-y-6 animate-in fade-in duration-200">
       {/* Top Action & View Switcher Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-4 rounded-3xl border border-[#E4EEF8] shadow-xs print:hidden">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setViewMode('harian')}
+            className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold transition-all ${
+              viewMode === 'harian'
+                ? 'bg-[#5A9FE8] text-white shadow-xs'
+                : 'bg-[#F7FBFF] text-[#71849A] hover:text-[#263B50] border border-[#E4EEF8]'
+            }`}
+          >
+            <ListFilter className="w-3.5 h-3.5" />
+            <span>Mode Harian (Interaktif)</span>
+          </button>
           <button
             type="button"
             onClick={() => setViewMode('poster')}
@@ -187,21 +227,22 @@ export default function JadwalPage() {
             <Columns className="w-3.5 h-3.5" />
             <span>Format Poster X DKV 1</span>
           </button>
+
+          {/* Quick Add Mapel Button */}
           <button
             type="button"
-            onClick={() => setViewMode('harian')}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold transition-all ${
-              viewMode === 'harian'
-                ? 'bg-[#5A9FE8] text-white shadow-xs'
-                : 'bg-[#F7FBFF] text-[#71849A] hover:text-[#263B50] border border-[#E4EEF8]'
-            }`}
+            onClick={() => {
+              setNewScheduleForm((prev) => ({ ...prev, day: activeDay }));
+              setIsAddScheduleModalOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-black bg-emerald-500 hover:bg-emerald-600 text-white shadow-sm transition-all"
           >
-            <ListFilter className="w-3.5 h-3.5" />
-            <span>Mode Harian</span>
+            <Plus className="w-3.5 h-3.5" />
+            <span>Tambah Mapel</span>
           </button>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => setShowPosterModal(true)}
@@ -622,75 +663,428 @@ export default function JadwalPage() {
             })}
           </div>
 
-          {/* Schedule List for Active Day */}
-          <div className="bg-white rounded-3xl border border-[#E4EEF8] p-5 sm:p-7 shadow-xs space-y-3">
-            <div className="flex items-center justify-between pb-3 border-b border-[#E4EEF8]">
-              <h2 className="text-base sm:text-lg font-bold text-[#263B50] flex items-center gap-2">
-                <span>Jadwal Pelajaran Hari {activeDay}</span>
-                {activeDay === currentToday && (
-                  <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#DCEEFF] text-[#263B50] border border-[#B9DCFF]">
-                    Hari Ini
-                  </span>
-                )}
-              </h2>
-              <span className="text-xs text-[#71849A]">Kurikulum X DKV 1</span>
+          {/* Schedule List for Active Day from state */}
+          <div className="bg-white rounded-3xl border border-[#E4EEF8] p-5 sm:p-7 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#E4EEF8]">
+              <div>
+                <h2 className="text-base sm:text-lg font-bold text-[#263B50] flex items-center gap-2">
+                  <span>Jadwal Pelajaran Hari {activeDay}</span>
+                  {activeDay === currentToday && (
+                    <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#DCEEFF] text-[#263B50] border border-[#B9DCFF]">
+                      Hari Ini
+                    </span>
+                  )}
+                </h2>
+                <p className="text-xs text-[#71849A]">
+                  Daftar sesi mata pelajaran kelas X DKV 1 • Klik ikon pensil untuk mengedit nama mapel & guru.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setNewScheduleForm((prev) => ({ ...prev, day: activeDay }));
+                  setIsAddScheduleModalOpen(true);
+                }}
+                className="self-start sm:self-auto inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-[#5A9FE8] hover:bg-[#468ed9] text-white text-xs font-bold shadow-xs transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Tambah Jam Pelajaran</span>
+              </button>
             </div>
 
             <div className="space-y-2">
-              {schedulePosterData.map((slot, idx) => {
-                const dayValue =
-                  activeDay === 'Senin'
-                    ? slot.senin
-                    : activeDay === 'Selasa'
-                    ? slot.selasa
-                    : activeDay === 'Rabu'
-                    ? slot.rabu
-                    : activeDay === 'Kamis'
-                    ? slot.kamis
-                    : slot.jumat;
+              {state.schedules
+                .filter((s) => s.day === activeDay)
+                .sort((a, b) => a.period - b.period)
+                .map((item, idx) => {
+                  if (item.isBreak) {
+                    return (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between p-3 rounded-2xl bg-rose-50/60 border border-dashed border-rose-200 text-rose-700 text-xs font-bold"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-3.5 h-3.5 text-rose-400" />
+                          <span>{item.startTime} - {item.endTime}</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span>{item.subject || 'Istirahat Kelas'}</span>
+                          <button
+                            type="button"
+                            onClick={() => setEditingScheduleItem(item)}
+                            className="p-1 rounded-lg text-rose-400 hover:text-rose-600 hover:bg-rose-100/50"
+                            title="Edit Sesi Istirahat"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  }
 
-                if (dayValue.subject === '-') return null;
-
-                if (slot.isBreak) {
                   return (
                     <div
-                      key={idx}
-                      className="flex items-center justify-between p-3 rounded-2xl bg-rose-50/60 border border-dashed border-rose-200 text-rose-700 text-xs font-bold"
+                      key={item.id}
+                      className="group flex flex-col sm:flex-row sm:items-center justify-between p-3.5 rounded-2xl bg-[#F7FBFF] border border-[#E4EEF8] hover:border-[#83BDF5] hover:bg-[#DEF0FC]/20 transition-all gap-2"
                     >
-                      <span>{slot.time}</span>
-                      <span>Istirahat Kelas</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-[#DCEEFF] flex items-center justify-center font-black text-xs text-[#263B50] shrink-0">
+                          {item.period > 0 ? item.period : idx + 1}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="font-extrabold text-sm text-[#263B50]">
+                              {item.subject}
+                            </h4>
+                            {item.room && (
+                              <span className="text-[10px] bg-white border border-[#E4EEF8] text-[#71849A] px-2 py-0.5 rounded-full font-medium">
+                                {item.room}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-xs text-[#71849A]">
+                            Guru: <strong className="text-[#263B50] font-semibold">{item.teacher || '-'}</strong>
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between sm:justify-end gap-2 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#E4EEF8]/60">
+                        <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white border border-[#E4EEF8] text-xs font-semibold text-[#263B50]">
+                          <Clock className="w-3.5 h-3.5 text-[#5A9FE8]" />
+                          <span>{item.startTime} - {item.endTime}</span>
+                        </div>
+
+                        {/* Quick Edit & Delete Mapel */}
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setEditingScheduleItem(item)}
+                            className="p-1.5 rounded-xl bg-white hover:bg-[#DCEEFF] border border-[#E4EEF8] text-[#5A9FE8] transition-colors"
+                            title="Edit Mata Pelajaran"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (confirm(`Hapus sesi pelajaran ${item.subject}?`)) {
+                                deleteSchedule(item.id);
+                                showToast(`Sesi ${item.subject} berhasil dihapus.`);
+                              }
+                            }}
+                            className="p-1.5 rounded-xl bg-white hover:bg-rose-50 border border-[#E4EEF8] text-rose-500 transition-colors"
+                            title="Hapus Sesi Pelajaran"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   );
-                }
-
-                return (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-between p-3.5 rounded-2xl bg-[#F7FBFF] border border-[#E4EEF8] hover:border-[#83BDF5] transition-colors"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-xl bg-[#DCEEFF] flex items-center justify-center font-bold text-xs text-[#263B50]">
-                        {idx + 1}
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-sm text-[#263B50]">
-                          {dayValue.subject}
-                        </h4>
-                        {dayValue.teacher && (
-                          <span className="text-xs text-[#71849A]">
-                            Guru: {dayValue.teacher}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-white border border-[#E4EEF8] text-xs font-semibold text-[#263B50]">
-                      <Clock className="w-3.5 h-3.5 text-[#5A9FE8]" />
-                      <span>{slot.time}</span>
-                    </div>
-                  </div>
-                );
-              })}
+                })}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-20 right-4 z-50 bg-[#263B50] text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2 animate-in slide-in-from-top-2 duration-200">
+          <Check className="w-4 h-4 text-emerald-400" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* MODAL EDIT SESI MAPEL */}
+      {editingScheduleItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="relative max-w-md w-full bg-white rounded-[32px] border-2 border-[#B9DCFF] p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[#E4EEF8]">
+              <div className="flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-[#5A9FE8]" />
+                <h3 className="font-black text-base text-[#263B50]">Edit Mata Pelajaran</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingScheduleItem(null)}
+                className="p-1 rounded-lg text-[#71849A] hover:bg-slate-100"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                updateSchedule(editingScheduleItem.id, editingScheduleItem);
+                showToast(`Jadwal ${editingScheduleItem.subject} berhasil diperbarui!`);
+                setEditingScheduleItem(null);
+              }}
+              className="space-y-3 text-xs"
+            >
+              <div>
+                <label className="block font-bold text-[#263B50] mb-1">Mata Pelajaran *</label>
+                <input
+                  type="text"
+                  required
+                  value={editingScheduleItem.subject}
+                  onChange={(e) => setEditingScheduleItem({ ...editingScheduleItem, subject: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] focus:bg-white text-xs font-semibold text-[#263B50] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#263B50] mb-1">Guru Pengampu</label>
+                <input
+                  type="text"
+                  placeholder="Contoh: Pak Derri, Bu Amelia..."
+                  value={editingScheduleItem.teacher || ''}
+                  onChange={(e) => setEditingScheduleItem({ ...editingScheduleItem, teacher: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] focus:bg-white text-xs text-[#263B50] outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#263B50] mb-1">Hari</label>
+                  <select
+                    value={editingScheduleItem.day}
+                    onChange={(e) => setEditingScheduleItem({ ...editingScheduleItem, day: e.target.value as any })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] text-xs text-[#263B50] outline-none"
+                  >
+                    <option value="Senin">Senin</option>
+                    <option value="Selasa">Selasa</option>
+                    <option value="Rabu">Rabu</option>
+                    <option value="Kamis">Kamis</option>
+                    <option value="Jumat">Jumat</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-[#263B50] mb-1">Jam Ke-</label>
+                  <input
+                    type="number"
+                    min={0}
+                    max={12}
+                    value={editingScheduleItem.period}
+                    onChange={(e) => setEditingScheduleItem({ ...editingScheduleItem, period: Number(e.target.value) })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] text-xs text-[#263B50] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#263B50] mb-1">Jam Mulai</label>
+                  <input
+                    type="text"
+                    placeholder="07.15"
+                    value={editingScheduleItem.startTime}
+                    onChange={(e) => setEditingScheduleItem({ ...editingScheduleItem, startTime: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] text-xs text-[#263B50] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#263B50] mb-1">Jam Selesai</label>
+                  <input
+                    type="text"
+                    placeholder="08.00"
+                    value={editingScheduleItem.endTime}
+                    onChange={(e) => setEditingScheduleItem({ ...editingScheduleItem, endTime: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] text-xs text-[#263B50] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#263B50] mb-1">Ruangan / Tempat</label>
+                <input
+                  type="text"
+                  placeholder="Contoh: Lab Komputer DKV, Lapangan..."
+                  value={editingScheduleItem.room || ''}
+                  onChange={(e) => setEditingScheduleItem({ ...editingScheduleItem, room: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] text-xs text-[#263B50] outline-none"
+                />
+              </div>
+
+              <div className="pt-3 flex items-center justify-between border-t border-[#E4EEF8]">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (confirm(`Hapus sesi ini?`)) {
+                      deleteSchedule(editingScheduleItem.id);
+                      showToast('Sesi pelajaran berhasil dihapus.');
+                      setEditingScheduleItem(null);
+                    }
+                  }}
+                  className="px-3 py-2 rounded-xl text-rose-600 hover:bg-rose-50 text-xs font-bold transition-colors flex items-center gap-1"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Hapus</span>
+                </button>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingScheduleItem(null)}
+                    className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#71849A] hover:bg-slate-100"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 rounded-xl bg-[#5A9FE8] hover:bg-[#468ed9] text-white text-xs font-black shadow-md shadow-[#5A9FE8]/30 transition-all flex items-center gap-1"
+                  >
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Simpan</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL TAMBAH SESI MAPEL BARU */}
+      {isAddScheduleModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="relative max-w-md w-full bg-white rounded-[32px] border-2 border-[#B9DCFF] p-6 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-[#E4EEF8]">
+              <div className="flex items-center gap-2">
+                <Plus className="w-4 h-4 text-[#5A9FE8]" />
+                <h3 className="font-black text-base text-[#263B50]">Tambah Mapel Hari {newScheduleForm.day}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsAddScheduleModalOpen(false)}
+                className="p-1 rounded-lg text-[#71849A] hover:bg-slate-100"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!newScheduleForm.subject.trim()) return;
+                addSchedule(newScheduleForm);
+                showToast(`Mata pelajaran ${newScheduleForm.subject} berhasil ditambahkan!`);
+                setIsAddScheduleModalOpen(false);
+                setNewScheduleForm({
+                  day: activeDay,
+                  period: 1,
+                  startTime: '07.15',
+                  endTime: '08.00',
+                  subject: '',
+                  teacher: '',
+                  room: 'Ruang X DKV 1',
+                  isBreak: false,
+                });
+              }}
+              className="space-y-3 text-xs"
+            >
+              <div>
+                <label className="block font-bold text-[#263B50] mb-1">Mata Pelajaran *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Contoh: Desain Komunikasi Visual"
+                  value={newScheduleForm.subject}
+                  onChange={(e) => setNewScheduleForm({ ...newScheduleForm, subject: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] focus:bg-white text-xs font-semibold text-[#263B50] outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#263B50] mb-1">Guru Pengampu</label>
+                <input
+                  type="text"
+                  placeholder="Contoh: Pak Derri"
+                  value={newScheduleForm.teacher || ''}
+                  onChange={(e) => setNewScheduleForm({ ...newScheduleForm, teacher: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] text-xs text-[#263B50] outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#263B50] mb-1">Hari</label>
+                  <select
+                    value={newScheduleForm.day}
+                    onChange={(e) => setNewScheduleForm({ ...newScheduleForm, day: e.target.value as any })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] text-xs text-[#263B50] outline-none"
+                  >
+                    <option value="Senin">Senin</option>
+                    <option value="Selasa">Selasa</option>
+                    <option value="Rabu">Rabu</option>
+                    <option value="Kamis">Kamis</option>
+                    <option value="Jumat">Jumat</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block font-bold text-[#263B50] mb-1">Jam Ke-</label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={12}
+                    value={newScheduleForm.period}
+                    onChange={(e) => setNewScheduleForm({ ...newScheduleForm, period: Number(e.target.value) })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] text-xs text-[#263B50] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#263B50] mb-1">Waktu Mulai</label>
+                  <input
+                    type="text"
+                    placeholder="07.15"
+                    value={newScheduleForm.startTime}
+                    onChange={(e) => setNewScheduleForm({ ...newScheduleForm, startTime: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] text-xs text-[#263B50] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#263B50] mb-1">Waktu Selesai</label>
+                  <input
+                    type="text"
+                    placeholder="08.00"
+                    value={newScheduleForm.endTime}
+                    onChange={(e) => setNewScheduleForm({ ...newScheduleForm, endTime: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] text-xs text-[#263B50] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-[#263B50] mb-1">Ruangan / Tempat</label>
+                <input
+                  type="text"
+                  placeholder="Contoh: Lab Komputer DKV, Ruang Kelas..."
+                  value={newScheduleForm.room || ''}
+                  onChange={(e) => setNewScheduleForm({ ...newScheduleForm, room: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl bg-[#F7FBFF] border border-[#B9DCFF] text-xs text-[#263B50] outline-none"
+                />
+              </div>
+
+              <div className="pt-3 flex items-center justify-end gap-2 border-t border-[#E4EEF8]">
+                <button
+                  type="button"
+                  onClick={() => setIsAddScheduleModalOpen(false)}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold text-[#71849A] hover:bg-slate-100"
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-xl bg-[#5A9FE8] hover:bg-[#468ed9] text-white text-xs font-black shadow-md shadow-[#5A9FE8]/30 transition-all flex items-center gap-1"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Tambahkan</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
